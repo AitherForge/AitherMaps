@@ -1,4 +1,5 @@
 // Aither Maps Google Maps configuration.
-// API key supplied by the Aither project owner.
-// Keep Google Cloud API restrictions configured for this key.
-window.AITHER_MAPS_DEMO_KEY = 'AIzaSyARQtWMUlFQqBIZ4OLjACo_US-h72MWTjc';
+// The GitHub Pages deployment workflow injects the browser-restricted
+// Google Maps API key from the GOOGLE_MAPS_API_KEY repository secret.
+// Do not commit the actual API key to this file.
+window.AITHER_MAPS_DEMO_KEY = 'REPLACE_BY_GITHUB_ACTIONS';
