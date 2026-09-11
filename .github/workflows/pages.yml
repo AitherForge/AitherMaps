@@ -23,14 +23,14 @@ jobs:
 
       - name: Inject Google Maps API key
         env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          GOOGLE_MAPS_DEMO_API_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
         run: |
-          if [ -z "$GOOGLE_MAPS_API_KEY" ]; then
-            echo "GOOGLE_MAPS_API_KEY repository secret is not configured."
+          if [ -z "$GOOGLE_MAPS_DEMO_API_KEY" ]; then
+            echo "GOOGLE_MAPS_DEMO_API_KEY repository secret is not configured."
             exit 1
           fi
           printf '%s\n' "// Generated during GitHub Pages deployment. Do not edit." > maps-config.js
-          printf '%s\n' "window.AITHER_MAPS_DEMO_KEY = '$GOOGLE_MAPS_API_KEY';" >> maps-config.js
+          printf '%s\n' "window.AITHER_MAPS_DEMO_KEY = '$GOOGLE_MAPS_DEMO_API_KEY';" >> maps-config.js
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
