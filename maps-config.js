@@ -1,4 +1,4 @@
-// Aither Maps Google Maps Demo Key configuration.
-// Get a free Maps Demo Key from Google Maps Platform and paste it below.
-// This key is intended for prototyping/testing and should be restricted when possible.
-window.AITHER_MAPS_DEMO_KEY = 'PASTE_YOUR_GOOGLE_MAPS_DEMO_KEY_HERE';
+// Aither Maps Google Maps configuration.
+// API key supplied by the Aither project owner.
+// Keep Google Cloud API restrictions configured for this key.
+window.AITHER_MAPS_DEMO_KEY = 'AIzaSyARQtWMUlFQqBIZ4OLjACo_US-h72MWTjc';
