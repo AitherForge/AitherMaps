@@ -14,6 +14,9 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
+env:
+  GOOGLE_MAPS_SECRET_NAME: GOOGLE_MAPS_DEMO_API_KEY
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,16 +24,35 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject Google Maps API key
+      - name: Validate Google Maps secret
         env:
           GOOGLE_MAPS_DEMO_API_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
+        shell: bash
         run: |
-          if [ -z "$GOOGLE_MAPS_DEMO_API_KEY" ]; then
-            echo "GOOGLE_MAPS_DEMO_API_KEY repository secret is not configured."
+          set -euo pipefail
+          if [[ -z "$GOOGLE_MAPS_DEMO_API_KEY" ]]; then
+            echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY repository secret is not configured."
             exit 1
           fi
-          printf '%s\n' "// Generated during GitHub Pages deployment. Do not edit." > maps-config.js
-          printf '%s\n' "window.AITHER_MAPS_DEMO_KEY = '$GOOGLE_MAPS_DEMO_API_KEY';" >> maps-config.js
+          if [[ ! "$GOOGLE_MAPS_DEMO_API_KEY" =~ ^AIza[[:alnum:]_-]{20,}$ ]]; then
+            echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY does not look like a Google API key."
+            exit 1
+          fi
+          echo "Google Maps API secret is configured and passed validation."
+
+      - name: Generate runtime Maps configuration
+        env:
+          GOOGLE_MAPS_DEMO_API_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const key = process.env.GOOGLE_MAPS_DEMO_API_KEY;
+          if (!key) throw new Error('Google Maps API key is missing.');
+          const config = `// Generated during GitHub Pages deployment. Do not edit.\nwindow.AITHER_MAPS_DEMO_KEY = ${JSON.stringify(key)};\n`;
+          fs.writeFileSync('maps-config.js', config, { encoding: 'utf8' });
+          NODE
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
