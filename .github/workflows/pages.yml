@@ -47,8 +47,7 @@ jobs:
           const fs = require('fs');
           const key = process.env.GOOGLE_MAPS_DEMO_API_KEY;
           if (!key) throw new Error('Google Maps API key is missing.');
-          const config = `// Generated during GitHub Pages deployment. Do not edit.\nwindow.AITHER_MAPS_DEMO_KEY = ${JSON.stringify(key)};\n`;
-          fs.writeFileSync('maps-config.js', config, { encoding: 'utf8' });
+          fs.writeFileSync('maps-config.js', `// Generated during GitHub Pages deployment. Do not edit.\nwindow.AITHER_MAPS_DEMO_KEY = ${JSON.stringify(key)};\n`, 'utf8');
           NODE
 
       - name: Verify generated configuration without exposing the key
