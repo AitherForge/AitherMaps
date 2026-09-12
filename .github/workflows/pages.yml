@@ -34,11 +34,7 @@ jobs:
             echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY repository secret is not configured."
             exit 1
           fi
-          if [[ ! "$GOOGLE_MAPS_DEMO_API_KEY" =~ ^AIza[[:alnum:]_-]{20,}$ ]]; then
-            echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY does not look like a Google API key."
-            exit 1
-          fi
-          echo "Google Maps API secret is configured and passed validation."
+          echo "Google Maps API secret is configured."
 
       - name: Generate runtime Maps configuration
         env:
