@@ -20,25 +20,33 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate Google Maps secret
+      - name: Load Google Maps secret
         env:
-          GOOGLE_MAPS_DEMO_API_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
+          REPO_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
+          ENV_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          if [[ -z "$GOOGLE_MAPS_DEMO_API_KEY" ]]; then
-            echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY repository secret is not configured."
+          KEY="${REPO_MAPS_KEY:-}"
+          if [[ -z "$KEY" ]]; then KEY="${ENV_MAPS_KEY:-}"; fi
+          if [[ -z "$KEY" ]]; then
+            echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY is unavailable to this workflow."
+            echo "Checked repository/environment secret named GOOGLE_MAPS_DEMO_API_KEY."
             exit 1
           fi
-          echo "Google Maps API secret is configured."
+          {
+            echo "GOOGLE_MAPS_DEMO_API_KEY<<__AITHER_MAPS_KEY__"
+            printf '%s\n' "$KEY"
+            echo "__AITHER_MAPS_KEY__"
+          } >> "$GITHUB_ENV"
 
       - name: Generate runtime Maps configuration
-        env:
-          GOOGLE_MAPS_DEMO_API_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
@@ -49,6 +57,14 @@ jobs:
           const config = `// Generated during GitHub Pages deployment. Do not edit.\nwindow.AITHER_MAPS_DEMO_KEY = ${JSON.stringify(key)};\n`;
           fs.writeFileSync('maps-config.js', config, { encoding: 'utf8' });
           NODE
+
+      - name: Verify generated configuration without exposing the key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s maps-config.js
+          grep -q 'window.AITHER_MAPS_DEMO_KEY' maps-config.js
+          echo "Runtime Maps configuration generated successfully."
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
