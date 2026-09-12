@@ -14,9 +14,6 @@ concurrency:
   group: pages
   cancel-in-progress: true
 
-env:
-  GOOGLE_MAPS_SECRET_NAME: GOOGLE_MAPS_DEMO_API_KEY
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,21 +25,17 @@ jobs:
 
       - name: Load Google Maps secret
         env:
-          REPO_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
-          ENV_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_DEMO_API_KEY }}
+          AITHER_MAPS_DEMO_KEY: ${{ secrets.AITHER_MAPS_DEMO_KEY }}
         shell: bash
         run: |
           set -euo pipefail
-          KEY="${REPO_MAPS_KEY:-}"
-          if [[ -z "$KEY" ]]; then KEY="${ENV_MAPS_KEY:-}"; fi
-          if [[ -z "$KEY" ]]; then
-            echo "ERROR: GOOGLE_MAPS_DEMO_API_KEY is unavailable to this workflow."
-            echo "Checked repository/environment secret named GOOGLE_MAPS_DEMO_API_KEY."
+          if [[ -z "${AITHER_MAPS_DEMO_KEY:-}" ]]; then
+            echo "ERROR: AITHER_MAPS_DEMO_KEY is unavailable to this workflow."
             exit 1
           fi
           {
             echo "GOOGLE_MAPS_DEMO_API_KEY<<__AITHER_MAPS_KEY__"
-            printf '%s\n' "$KEY"
+            printf '%s\n' "$AITHER_MAPS_DEMO_KEY"
             echo "__AITHER_MAPS_KEY__"
           } >> "$GITHUB_ENV"
 
